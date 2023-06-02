@@ -3,6 +3,7 @@
 #include <sstream>
 #include <cctype>
 #include <fstream>
+#include "sqlite-amalgamation-3420000/sqlite3.h"
 
 using namespace std;
 int ID, Pass, noftry;
@@ -69,6 +70,7 @@ public:
 
     int newuser(string(*function)(const string& input)) {
         int telno, id;
+
         string name, password, confirmPassword, idString;
         cin.ignore();
 
@@ -82,6 +84,8 @@ public:
             }
 
             string convertedName = function(name);
+            int t = stoi(convertedName);
+            return t;
             break;
         }
 
@@ -132,17 +136,26 @@ public:
             }
         }
 
-        fstream MyFile(idString.append(".txt"), ios::out);
-        MyFile << id << "-" << password << "-" << name << endl;
+        sqlite3* db;
+        int rc = sqlite3_open("database.db", &db);
+        string insertQuery = "INSERT INTO Users (ID, FULL_NAME, PASSWORD) VALUES (" + to_string(id) + ", '" + to_string(t) + "', '" + password + "');";
 
-        return 0;
+        char* errMsg;
+        rc = sqlite3_exec(db, insertQuery.c_str(), 0, 0, &errMsg);
+
+        if (rc != SQLITE_OK) {
+            if (string(errMsg).find("UNIQUE constraint failed: Users.ID") != string::npos) {
+                cerr << "ID already exists." << endl;
+            }
+            sqlite3_close(db);
+            return 0;
 
 
+
+        }
 
     }
 
-
-};
-
+    };
 
 

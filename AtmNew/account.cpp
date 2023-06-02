@@ -10,8 +10,14 @@ class accountscheck {
 public:
 	int accountcheck(void) {
 		sqlite3* db;
-		int result = sqlite3_open("accounts.db", &db);
-		const char* createTableQuery = "CREATE TABLE users (id INTEGER PRIMARY KEY, full_name TEXT, password TEXT);";
+		int rc = sqlite3_open("accounts.db", &db);
+		string createTableQuery = "CREATE TABLE Users ("
+			"ID INTEGER PRIMARY KEY, "
+			"FULL_NAME TEXT, "
+			"PASSWORD TEXT);";
+		char* errMsg;
+		rc = sqlite3_exec(db, createTableQuery.c_str(), 0, 0, &errMsg);
+
 
 
 
