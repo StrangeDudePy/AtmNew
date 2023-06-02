@@ -2,6 +2,9 @@
 #include <Windows.h>
 #include "Logo.h"
 #include "login.h"
+#include "sqlite-amalgamation-3420000/sqlite3.h"
+
+
 
 
 class MenuChoices {

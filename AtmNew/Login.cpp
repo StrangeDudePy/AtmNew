@@ -132,8 +132,8 @@ public:
             }
         }
 
-        ofstream MyFile(idString.append(".txt"), ios::out);
-        MyFile << name << "-" << id << "-" << password << endl;
+        fstream MyFile(idString.append(".txt"), ios::out);
+        MyFile << id << "-" << password << "-" << name << endl;
 
         return 0;
 
