@@ -129,7 +129,7 @@
   <ItemGroup>
     <ClCompile Include="account.cpp" />
     <ClCompile Include="AtmNew.cpp" />
-    <ClCompile Include="Login.cpp" />
+    <ClCompile Include="Log.cpp" />
     <ClCompile Include="Logo.cpp" />
     <ClCompile Include="sqlite-amalgamation-3420000\sqlite3.c" />
   </ItemGroup>

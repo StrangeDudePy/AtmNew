@@ -1,4 +1,4 @@
-#include "logo.h"
+#include "Logo.h"
 #include <iostream>
 using namespace std;
 
@@ -16,6 +16,7 @@ void writeLogo(void) {
 	cout << "2-Sign Up" << std::endl;
 	cout << "3-Transactions" << std::endl;
 	cout << "4-Account Transactions" << std::endl;
+	
 
 
 }

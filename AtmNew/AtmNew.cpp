@@ -4,50 +4,44 @@
 #include "login.h"
 #include "sqlite-amalgamation-3420000/sqlite3.h"
 
-
-
+signupmenu obj;
 
 class MenuChoices {
-
-    int decision( int chosen_) {
-        switch (chosen_)
-        {
-
+public:
+    int decision(int chosen_, signupmenu& menu) {
+        switch (chosen_) {
         case 1:
-            int login();
-
+            break;
         case 2:
-
-
-
+        menu.newuser();
+        
+    
+        break;
         case 3:
-
+            break;
         default:
             break;
         }
-
-
+    
+        return 0;
     }
 
-
 };
-
 
 using namespace std;
 int choie;
 
 int main() {
-    while (true) {
-        system("Color 0B");
-        writeLogo();
-        cout << " " << endl;
-        cout << " " << endl;
-        cout << " " << endl;
-        cout << "Enter your choice";
-        cin >> choie;
-        cout << " " << endl;
+    system("Color 0B");
+    writeLogo();
+    cout << " " << endl;
+    cout << " " << endl;
+    cout << " " << endl;
+    cout << "Enter your choice: ";
+    cin >> choie;
+    cin.ignore();
+    MenuChoices choc;
+    choc.decision(choie, obj);
 
-      
-
-    }
+   
 }
