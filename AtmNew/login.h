@@ -39,4 +39,21 @@ public:
     int newuser();
 };
 
+class trancis {
+public:
+    int withdrawals() {
+
+    }
+
+    int deposit() {
+
+
+
+
+
+    }
+};
+
+
+
 #endif

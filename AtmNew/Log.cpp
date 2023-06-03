@@ -123,11 +123,6 @@ string signupmenu::getPassword() {
     }
 
 
-
-
-#include <iostream>
-#include <vector>
-
 int signupmenu::newuser() {
     int id = getID();
     string name = getName();
@@ -142,7 +137,7 @@ int signupmenu::newuser() {
         return 0;
     }
 
-    string createTableQuery = "CREATE TABLE IF NOT EXISTS Users (ID INT PRIMARY KEY, FULL_NAME TEXT, PASSWORD TEXT);";
+    string createTableQuery = "CREATE TABLE IF NOT EXISTS Users (ID INT PRIMARY KEY, FULL_NAME TEXT, PASSWORD TEXT, INCOME INT DEFAULT 0, OUTCOME INT DEFAULT 0, BALANCE INT DEFAULT 0);";
 
     char* errMsg;
     rc = sqlite3_exec(db, createTableQuery.c_str(), 0, 0, &errMsg);
@@ -154,7 +149,7 @@ int signupmenu::newuser() {
         return 0;
     }
 
-    string insertQuery = "INSERT INTO Users (ID, FULL_NAME, PASSWORD) VALUES (" + to_string(id) + ", '" + formattedName + "', '" + password + "');";
+    string insertQuery = "INSERT INTO Users (ID, FULL_NAME, PASSWORD, INCOME, OUTCOME, BALANCE) VALUES (" + to_string(id) + ", '" + formattedName + "', '" + password + "', 0, 0, 0);";
 
     rc = sqlite3_exec(db, insertQuery.c_str(), 0, 0, &errMsg);
 
@@ -183,8 +178,11 @@ int signupmenu::newuser() {
             int userID = sqlite3_column_int(stmt, 0);
             const unsigned char* fullName = sqlite3_column_text(stmt, 1);
             const unsigned char* password = sqlite3_column_text(stmt, 2);
+            int income = sqlite3_column_int(stmt, 3);
+            int outcome = sqlite3_column_int(stmt, 4);
+            int balance = sqlite3_column_int(stmt, 5);
 
-            cout << "User ID: " << userID << ", Full Name: " << fullName << ", Password: " << password << endl;
+            cout << "User ID: " << userID << ", Full Name: " << fullName << ", Password: " << password << ", Income: " << income << ", Outcome: " << outcome << ", Balance: " << balance << endl;
         }
     }
     else {
@@ -193,6 +191,7 @@ int signupmenu::newuser() {
 
     sqlite3_finalize(stmt);
     sqlite3_close(db);
+
 }
 
 

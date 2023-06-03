@@ -14,8 +14,6 @@ public:
             break;
         case 2:
         menu.newuser();
-        
-    
         break;
         case 3:
             break;
