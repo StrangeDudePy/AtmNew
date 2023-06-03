@@ -28,6 +28,9 @@
     <ClCompile Include="Log.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="money.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Logo.h">
@@ -40,6 +43,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\Desktop\Web Tasarım\SiteTasarım\YeniBaşlangıc\sqlite-amalgamation-3420000\sqlite-amalgamation-3420000\sqlite3.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="money.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
