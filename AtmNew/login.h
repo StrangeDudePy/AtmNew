@@ -23,6 +23,10 @@ public:
     string getPassword();
 
     int newuser();
+
+    void readUsersFromDatabase(const string& databasePath);
+
+    string convertToLowerCase(string name);
 };
 
 
