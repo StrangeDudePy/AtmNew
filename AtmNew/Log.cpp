@@ -168,7 +168,7 @@ int signupmenu::newuser() {
 
     cout << "User successfully created." << endl;
 
-    // Tabloyu yazdırma
+    // Writing The Table Here
     string selectQuery = "SELECT * FROM Users;";
     sqlite3_stmt* stmt;
 
@@ -191,7 +191,8 @@ int signupmenu::newuser() {
 
     sqlite3_finalize(stmt);
     sqlite3_close(db);
-
+    system("cls");
+    writeLogo();
 }
 
 

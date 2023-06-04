@@ -3,17 +3,17 @@
 
 class moneytra {
 public:
-	int withdraw() {
+    int withdraw();
+       
+    
 
-	}
+    int depposit();
+        
+    
+
+    int useraccount();
+        
+    
 };
-
-
-
-
-
-
-
-
 
 #endif
