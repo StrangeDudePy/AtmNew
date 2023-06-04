@@ -12,10 +12,8 @@ void writeLogo(void) {
 	cout << "" << std::endl;
 	cout << "" << std::endl;
 	cout << "Welcome" << std::endl;
-	cout << "1-Login" << std::endl;
-	cout << "2-Sign Up" << std::endl;
-	cout << "3-Reset Password" << std::endl;
-	cout << "4-Transactions" << std::endl;
-
+	cout << "1-Sign Up" << std::endl;
+	cout << "2-Transactions" << std::endl;
+	cout << "3-Admin Panel" << std::endl;
 
 }

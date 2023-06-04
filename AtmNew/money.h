@@ -14,6 +14,7 @@ public:
     int useraccount();
         
     
+    int sentmoney();
 };
 
 #endif

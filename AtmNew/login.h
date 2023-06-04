@@ -4,21 +4,7 @@
 #include <string>
 using namespace std;
 
-class loginmenu {
-public:
-    int login() {
-       
-        return 0;
-    }
 
-    int logcheck(int A, int B) {
-        return 0;
-    }
-
-    int forgotpass(int a, int b) {
-        return 0;
-    }
-};
 
 class signupmenu {
 public:

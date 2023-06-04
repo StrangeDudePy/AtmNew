@@ -6,14 +6,14 @@
 #include "Logo.h"
 using namespace std;
 int passing_id;
-signupmenu id_;
+signupmenu tra;
 
 
 int moneytra::withdraw() {
 
     sqlite3* db;
     int rc = sqlite3_open("accounts.db", &db);
-    sqlite3_stmt* stmt;
+    sqlite3_stmt* stmt_with;
 
     int idp, withdrawv;
     string tpass, psp;
@@ -29,12 +29,12 @@ int moneytra::withdraw() {
     }
 
     string selectQuery = "SELECT ID, PASSWORD FROM Users WHERE ID =" + to_string(idp) + ";";
-    rc = sqlite3_prepare_v2(db, selectQuery.c_str(), -1, &stmt, 0);
+    rc = sqlite3_prepare_v2(db, selectQuery.c_str(), -1, &stmt_with, 0);
 
     if (rc == SQLITE_OK) {
-        if (sqlite3_step(stmt) == SQLITE_ROW) {
-            int dbId = sqlite3_column_int(stmt, 0);
-            const unsigned char* passing = sqlite3_column_text(stmt, 1);
+        if (sqlite3_step(stmt_with) == SQLITE_ROW) {
+            int dbId = sqlite3_column_int(stmt_with, 0);
+            const unsigned char* passing = sqlite3_column_text(stmt_with, 1);
             psp = reinterpret_cast<const char*>(passing);
 
             if (idp == dbId && tpass == psp) {
@@ -66,6 +66,10 @@ int moneytra::withdraw() {
                             else {
                                 cerr << "Failed to update balance: " << sqlite3_errmsg(db) << endl;
                             }
+                            sqlite3_finalize(stmt_balance_);
+                            sqlite3_close(db);
+                        
+                        
                         }
                     }
                 }
@@ -76,16 +80,19 @@ int moneytra::withdraw() {
             cout << "Invalid ID or Password." << endl;
             system("cls");
             writeLogo();
+            sqlite3_finalize(stmt_with);
+            sqlite3_close(db);
             
             
        
             }
         }
-        sqlite3_finalize(stmt);
-        sqlite3_close(db);
+    
 
-
+        sqlite3_finalize(stmt_with);
     }
+    sqlite3_close(db);
+    return 0;
 }
 
 
@@ -222,7 +229,7 @@ int moneytra::useraccount() {
                 }
                 sqlite3_stmt* stmt_balance;
                 string selectQuery_BALANCE = "SELECT BALANCE User WHERE ID = " + to_string(tid_user) + ";";
-                int rc_balance = sqlite3_prepare_v2(db, selectQuery_BALANCE.c_str(), -1, &balance, 0);
+                int rc_balance = sqlite3_prepare_v2(db, selectQuery_BALANCE.c_str(), -1, &stmt_balance, 0);
                 if (rc_balance == SQLITE_OK) {
                     if (sqlite3_step(stmt_balance) == SQLITE_ROW) {
                         int balance_user = sqlite3_column_int(stmt_balance, 0);
@@ -247,4 +254,98 @@ int moneytra::useraccount() {
     
     sqlite3_finalize(stmt_user);
     sqlite3_close(db);
+}
+
+
+
+int moneytra::sentmoney() {
+    sqlite3* db;
+    int rc_transfer = sqlite3_open("accounts.db", &db);
+    sqlite3_stmt* stmt_sent;
+    int sent_id, rec_id,transfer_sent;
+    string sent_pass, rec_pass,psp_sent,recname;
+    cout << "Enter Your ID:";
+    cin >> sent_id;
+    cout << "Enter Your Password;";
+    cin >> sent_pass;
+    if (rc_transfer != SQLITE_OK) { //delete this later
+        cerr << "Cannot open database: " << sqlite3_errmsg(db) << endl;
+        return 0;
+    }
+    string selectQuery_sentt = "SELECT ID, PASSWORD FROM Users WHERE ID =" + to_string(sent_id) + ";";//update this one later
+    rc_transfer = sqlite3_prepare_v2(db, selectQuery_sentt.c_str(), -1, &stmt_sent, 0);
+    if (rc_transfer == SQLITE_OK) {
+        if (sqlite3_step(stmt_sent) == SQLITE_ROW) {
+            int id_sent = sqlite3_column_int(stmt_sent, 0);
+            const unsigned char* passing_transfer = sqlite3_column_text(stmt_sent, 1);
+            psp_sent = reinterpret_cast<const char*>(passing_transfer);
+            if (sent_pass == psp_sent && sent_id == id_sent) {
+                sqlite3_stmt* stmt_sentmoney;
+                string selectQuery_BALANCE = "SELECT BALANCE FROM Users WHERE ID =" + to_string(sent_id) + ";";
+                int rc_sentbalance = sqlite3_prepare_v2(db, selectQuery_BALANCE.c_str(), -1, &stmt_sentmoney, 0);
+                if (rc_sentbalance == SQLITE_OK) {
+                    if (sqlite3_step(stmt_sentmoney) == SQLITE_ROW) {
+                        int balance_sent = sqlite3_column_int(stmt_sentmoney, 0);
+
+                        cout << "Enter Amount Of Money You Want To Transfer";
+                        cin >> transfer_sent;
+                        cout << "Göndermek Ýstediðiniz Kiþinin Adýný Giriniz";
+                        cin >> recname;
+                        string editedrecname = tra.formatName(recname);
+                        if (balance_sent - transfer_sent < 0) {
+                            cout << "Insufficient Balance, Transaction Failed";
+                            system("cls");
+                            writeLogo();
+
+
+                        }
+                        sqlite3_finalize(stmt_sentmoney);
+                        if (balance_sent - transfer_sent >= 0) {
+                            sqlite3_stmt* stmt_rec;
+                            string selectQuery_RECID = "SELECT BALANCE FROM User WHERE FULL_NAME = " + recname + ";";
+                            int rc_balance = sqlite3_prepare_v2(db, selectQuery_BALANCE.c_str(), -1, &stmt_rec, 0);
+                            if (rc_balance == SQLITE_OK) {
+                                if (sqlite3_step(stmt_rec) == SQLITE_ROW) {
+                                    int balance_rec = sqlite3_column_int(stmt_rec, 0);
+                                    int balance_rec_final = balance_rec + transfer_sent;
+                                    string updateQuerysent = "UPDATE Users SET BALANCE = " + to_string(balance_rec_final) + " WHERE FULL_NAME = " + recname + ";";
+                                    rc_balance = sqlite3_exec(db, updateQuerysent.c_str(), 0, 0, 0);
+                                    sqlite3_finalize(stmt_rec);
+                                    string balanceQuery_sent = "SELECT BALANCE FROM Users WHERE ID =" + to_string(id_sent) + ";";
+                                    sqlite3_stmt* stmt_sent_;
+                                    int rc_sent_ = sqlite3_prepare_v2(db, balanceQuery_sent.c_str(), -1, &stmt_sent_, 0);
+                                    if (rc_sent_ == SQLITE_OK) {
+                                        if (sqlite3_step(stmt_sent_) == SQLITE_ROW) {
+                                            int curbalance_sent = sqlite3_column_int(stmt_sent_, 0);
+                                            int lastbalance_sent = curbalance_sent - transfer_sent;
+                                            string updateQuerysent_ = "UPDATE Users SET BALANCE = " + to_string(lastbalance_sent) + " WHERE ID = " + to_string(id_sent) + ";";
+                                            rc_sent_ = sqlite3_exec(db, updateQuerysent_.c_str(), 0, 0, 0);
+                                            if (rc_sent_ == SQLITE_OK) {
+                                                cout << "Transaction Successful! :Money sent; " << transfer_sent << endl;
+                                                cout << "Remaining Balance: " << lastbalance_sent << endl;
+                                            }
+
+
+
+
+
+                                        }
+
+
+                                    }
+
+                                }
+
+
+
+
+                            }
+                        }
+
+                    }
+
+                }
+
+            }
+        }
 }
