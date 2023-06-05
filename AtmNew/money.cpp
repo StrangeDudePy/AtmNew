@@ -10,7 +10,6 @@ signupmenu tra;
 
 
 int moneytra::withdraw() {
-
     sqlite3* db;
     int rc = sqlite3_open("accounts.db", &db);
     sqlite3_stmt* stmt_with;
@@ -47,58 +46,52 @@ int moneytra::withdraw() {
 
                 if (rc == SQLITE_OK) {
                     if (sqlite3_step(stmt_balance_) == SQLITE_ROW) {
-                        int curbalance = sqlite3_column_int(stmt_balance_,0);
+                        int curbalance = sqlite3_column_int(stmt_balance_, 0);
                         if (curbalance - withdrawv < 0) {
                             cout << "Transaction Failed, Insufficient Balance" << endl;
+                            cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Giriþ tamamýný temizler
                             cout << "Press enter to return to the main menu";
-                            cin.get();
+                            cin.get(); // Bir tuþa basýlmasýný bekler
                             system("cls");
-                            writeLogo();
-                            
+                            return 1;
                         }
                         else {
                             int leftbalance = curbalance - withdrawv;
-                            string updateQuery = "UPDATE Users SET BALANCE = " + to_string(leftbalance) + ", OUTCOME = " + to_string(withdrawv) + " WHERE ID = " + to_string(idp) + ";";                        
+                            string updateQuery = "UPDATE Users SET BALANCE = " + to_string(leftbalance) + ", OUTCOME = " + to_string(withdrawv) + " WHERE ID = " + to_string(idp) + ";";
                             int rc_update = sqlite3_exec(db, updateQuery.c_str(), 0, 0, 0);
                             if (rc_update == SQLITE_OK) {
                                 cout << "Transaction Successful! Amount Withdrawn From Your Account: " << withdrawv << endl;
                                 cout << "Remaining Balance: " << leftbalance << endl;
+                                cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Giriþ tamamýný temizler
                                 cout << "Press enter to return to the main menu";
-                                cin.get();
+                                cin.get(); // Bir tuþa basýlmasýný bekler
                                 system("cls");
-                                writeLogo();
+                                return 1;
                             }
                             else {
                                 cerr << "Failed to update balance: " << sqlite3_errmsg(db) << endl;
                             }
                             sqlite3_finalize(stmt_balance_);
                             sqlite3_close(db);
-                        
-                        
                         }
                     }
                 }
                 sqlite3_finalize(stmt_balance_);
             }
-
             else {
-            cout << "Invalid ID or Password." << endl;
-            system("cls");
-            writeLogo();
-            sqlite3_finalize(stmt_with);
-            sqlite3_close(db);
-            
-            
-       
+                cout << "Invalid ID or Password." << endl;
+                cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Giriþ tamamýný temizler
+                cout << "Press enter to return to the main menu";
+                cin.get(); // Bir tuþa basýlmasýný bekler
+                system("cls");
+                return 1;
             }
         }
-    
-
         sqlite3_finalize(stmt_with);
     }
     sqlite3_close(db);
-    return 0;
 }
+
 
 
 int moneytra::depposit() {
@@ -106,15 +99,15 @@ int moneytra::depposit() {
     int rc_dep = sqlite3_open("accounts.db", &db);
     sqlite3_stmt* stmt_deposit;
 
-    int depvalue,idp_dep;
+    int depvalue, idp_dep;
     string tpas_dep, psp_dep;
 
-    cout << "Enter Your ID:";
+    cout << "Enter Your ID: ";
     cin >> idp_dep;
-    cout << "Enter Your Password;";
+    cout << "Enter Your Password: ";
     cin >> tpas_dep;
 
-    if (rc_dep != SQLITE_OK) { //delete this later
+    if (rc_dep != SQLITE_OK) {
         cerr << "Cannot open database: " << sqlite3_errmsg(db) << endl;
         return 0;
     }
@@ -127,17 +120,25 @@ int moneytra::depposit() {
             const unsigned char* passing_dep = sqlite3_column_text(stmt_deposit, 1);
             psp_dep = reinterpret_cast<const char*>(passing_dep);
 
-
             if (idp_dep == id_dep && tpas_dep == psp_dep) {
-                cout << "Enter the Amount You Want To Deposit Into Your Account ";
+                cout << "Enter the Amount You Want To Deposit Into Your Account: ";
                 cin >> depvalue;
                 if (depvalue > 10000) {
-                    cout << "You Cannot Deposit More Than 10000 At A Time";
+                    cout << "You Cannot Deposit More Than 10000 At A Time" << endl;
+                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
                     cout << "Press enter to return to the main menu";
                     cin.get();
                     system("cls");
-                    writeLogo();
-                    
+                    return 1;
+                }
+
+                if (depvalue < 0) {
+                    cout << "Invalid Value" << endl;
+                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                    cout << "Press enter to return to the main menu";
+                    cin.get();
+                    system("cls");
+                    return 1;
                 }
 
                 else {
@@ -149,41 +150,33 @@ int moneytra::depposit() {
                         if (sqlite3_step(stmt_balance) == SQLITE_ROW) {
                             int curbalance_dep = sqlite3_column_int(stmt_balance, 0);
                             int lastbalance_dep = curbalance_dep + depvalue;
-                            string updateQuery = "UPDATE Users SET BALANCE = " + to_string(lastbalance_dep) + " WHERE ID = " + to_string(idp_dep) + ";";
-                            string updateQueryIncome = "UPDATE Users SET INCOME = " + to_string(depvalue) + "WHERE ID = " + to_string(idp_dep) + ";";
-                            rc_dep = sqlite3_exec(db, updateQuery.c_str(), 0, 0, 0);
-                            if (rc_dep == SQLITE_OK) {
-                                cout << "Transaction Successful! :Money Deposited to Your Account " << depvalue << endl;
+                            string updateQuery = "UPDATE Users SET BALANCE = " + to_string(lastbalance_dep) + ", INCOME = " + to_string(depvalue) + " WHERE ID = " + to_string(idp_dep) + ";";
+                            int execResult = sqlite3_exec(db, updateQuery.c_str(), 0, 0, 0);
+                            if (execResult == SQLITE_OK) {
+                                cout << "Transaction Successful! Money Deposited to Your Account: " << depvalue << endl;
                                 cout << "Current Balance: " << lastbalance_dep << endl;
-                                cout << "Press enter to return to the main menu";
-                                cin.get();
-                                system("cls");
-                                writeLogo();
                             }
-                            
                         }
-
                     }
                     sqlite3_finalize(stmt_balance);
                 }
             }
-            
-            else{
+            else {
                 cout << "Invalid ID or Password." << endl;
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
                 cout << "Press enter to return to the main menu";
                 cin.get();
                 system("cls");
-                writeLogo();
+                return 1;
             }
-
-            
-
         }
-    
         sqlite3_finalize(stmt_deposit);
         sqlite3_close(db);
-    
-    
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        cout << "Press enter to return to the main menu";
+        cin.get();
+        system("cls");
+        return 1;
     }
 }
 
@@ -220,7 +213,7 @@ int moneytra::useraccount() {
             psp_user = reinterpret_cast<const char*>(passing_user);
             if (tid_user == id_user && tpass_user==psp_user) {
                 sqlite3_stmt* stmt_income;
-                string selectQuery_INCOME = "SELECT INCOME Users WHERE ID =" + to_string(tid_user) + ";";
+                string selectQuery_INCOME = "SELECT INCOME  FROM Users WHERE ID =" + to_string(tid_user) + ";";
                 int rc_income = sqlite3_prepare_v2(db, selectQuery_INCOME.c_str(), -1, &stmt_income, 0);
                 if (rc_income == SQLITE_OK) {
                     if (sqlite3_step(stmt_income) == SQLITE_ROW) {
@@ -230,7 +223,7 @@ int moneytra::useraccount() {
                     sqlite3_finalize(stmt_income);
                 }
                 sqlite3_stmt* stmt_outcome;
-                string selectQuery_OUTCOME = "SELECT OUTCOME Users WHERE ID =" + to_string(tid_user) + ";";
+                string selectQuery_OUTCOME = "SELECT OUTCOME FROM Users WHERE ID =" + to_string(tid_user) + ";";
                 int rc_outcome = sqlite3_prepare_v2(db, selectQuery_OUTCOME.c_str(), -1, &stmt_outcome, 0);
                 if (rc_outcome == SQLITE_OK) {
                     if (sqlite3_step(stmt_outcome) == SQLITE_ROW) {
@@ -240,7 +233,7 @@ int moneytra::useraccount() {
                     sqlite3_finalize(stmt_outcome);
                 }
                 sqlite3_stmt* stmt_balance;
-                string selectQuery_BALANCE = "SELECT BALANCE User WHERE ID = " + to_string(tid_user) + ";";
+                string selectQuery_BALANCE = "SELECT BALANCE FROM User WHERE ID = " + to_string(tid_user) + ";";
                 int rc_balance = sqlite3_prepare_v2(db, selectQuery_BALANCE.c_str(), -1, &stmt_balance, 0);
                 if (rc_balance == SQLITE_OK) {
                     if (sqlite3_step(stmt_balance) == SQLITE_ROW) {
@@ -253,18 +246,21 @@ int moneytra::useraccount() {
 
                 cout << "ID          INCOME          OUTCOME          BALANCE" << endl;
                 cout << tid_user << "          " << income << "          " << outcome << "          " << balance_user << endl;
+                cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Giriþi temizler
                 cout << "Press enter to return to the main menu";
-                cin.get();
+                cin.get(); // Bir tuþa basýlmasýný bekler
                 system("cls");
-                writeLogo();
+                return 1;
             }
             
             else {
                 cout << "Invalid ID or Password." << endl;
+                cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Giriþi temizler
                 cout << "Press enter to return to the main menu";
-                cin.get();
+                cin.get(); // Bir tuþa basýlmasýný bekler
                 system("cls");
-                writeLogo();
+                return 1;
+               
             }
 
         }
@@ -312,10 +308,11 @@ int moneytra::sentmoney() {
                         cin >> recid;
                         if (balance_sent - transfer_sent < 0) {
                             cout << "Insufficient Balance, Transaction Failed" << endl;
+                            cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Giriþi temizler
                             cout << "Press enter to return to the main menu";
-                            cin.get();
+                            cin.get(); // Bir tuþa basýlmasýný bekler
                             system("cls");
-                            writeLogo();
+                            return 1;
                         }
                         else {
                             sqlite3_stmt* stmt_rec;
@@ -329,24 +326,27 @@ int moneytra::sentmoney() {
                                     string updateQuerysent = "UPDATE Users SET BALANCE = " + to_string(balance_rec_final) + " WHERE ID = " + to_string(recid) + ";";
                                     rc_balance = sqlite3_exec(db, updateQuerysent.c_str(), 0, 0, 0);
                                     if (rc_balance == SQLITE_OK) {
-                                        string updateQuerysent_balance = "UPDATE Users SET BALANCE = " + to_string(balance_sent_final) + " WHERE ID = " + to_string(sent_id) + ";";
+                                        string updateQuerysent_balance = "UPDATE Users SET BALANCE = " + to_string(balance_sent_final) + ",OUTCOME = " + to_string(balance_sent) + " WHERE ID = " + to_string(sent_id) + ";";
                                         rc_balance = sqlite3_exec(db, updateQuerysent_balance.c_str(), 0, 0, 0);
                                         if (rc_balance == SQLITE_OK) {
-                                            cout << "Transaction Successful, Money Sent!" << endl;
-                                            cout << "Remaining Balance: " << balance_sent_final << endl;
+                                            cout << "Transaciton Succesful,Money Sent!" <<endl;
+                                            cout << "Current Balance: " << balance_sent_final << endl;
+                                            cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Giriþi temizler
                                             cout << "Press enter to return to the main menu";
-                                            cin.get();
+                                            cin.get(); // Bir tuþa basýlmasýný bekler
                                             system("cls");
-                                            writeLogo();
+                                            return 1;
+                                            
                                         }
                                     }
                                 }
                                 else {
                                     cout << "Recipient ID does not exist." << endl;
+                                    cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Giriþi temizler
                                     cout << "Press enter to return to the main menu";
-                                    cin.get();
+                                    cin.get(); // Bir tuþa basýlmasýný bekler
                                     system("cls");
-                                    writeLogo();
+                                    return 1;
                                 }
                             }
                             sqlite3_finalize(stmt_rec);
@@ -356,16 +356,18 @@ int moneytra::sentmoney() {
             }
             else {
                 cout << "Invalid ID or Password." << endl;
+                cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Giriþi temizler
                 cout << "Press enter to return to the main menu";
-                cin.get();
+                cin.get(); // Bir tuþa basýlmasýný bekler
                 system("cls");
-                writeLogo();
+                return 1;
             }
         }
     }
 
     sqlite3_finalize(stmt_sent);
     sqlite3_close(db);
-
+   
+ 
 }
 

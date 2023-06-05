@@ -191,10 +191,11 @@ int signupmenu::newuser() {
             cout << "ID already exists." << endl;
             sqlite3_finalize(stmt_select);
             sqlite3_close(db);
+            cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Giriþi temizler
             cout << "Press enter to return to the main menu";
-            cin.get();
+            cin.get(); // Bir tuþa basýlmasýný bekler
             system("cls");
-            writeLogo();
+            return 1;
             
         }
     }
@@ -209,10 +210,11 @@ int signupmenu::newuser() {
     cout << "Registration Successful" << endl;
 
     sqlite3_close(db);
+    cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Giriþi temizler
     cout << "Press enter to return to the main menu";
-    cin.get();
+    cin.get(); // Bir tuþa basýlmasýný bekler
     system("cls");
-    writeLogo();
+    return 1;
     
 
 }
@@ -256,6 +258,7 @@ void signupmenu::readUsersFromDatabase(const string& databasePath) {
             << ", Password: " << password
             << ", Full Name: " << fullName
             << endl;
+            
     }
 
     sqlite3_finalize(stmt);

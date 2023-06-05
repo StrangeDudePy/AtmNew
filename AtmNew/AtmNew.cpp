@@ -21,55 +21,49 @@ public:
         break;
         
         case 2:
+       
+            system("cls");
             cout << "Welcome" << ::endl;
-            cout << "Select A Transaction" << endl;
             cout << "1-Withdraw Money" << endl;
             cout << "2-Deposit Money" << endl;
             cout << "3-Account Information" << endl;
-            cout << "4-Sent Money" << endl;;
+            cout << "4-Sent Money" << endl;
+            cout << "  " << endl;
+            cout << "Select A Transaction: ";
             cin >> dec;
             if (dec == 1) {
                 obj2.withdraw();
-                cout << "Press enter to return to the main menu";
-                cin.get();
-                system("cls");
-                writeLogo();
+                
+                
             }
 
             if (dec == 2) {
                 obj2.depposit();
-                cout << "Press enter to return to the main menu";
-                cin.get();
-                system("cls");
-                writeLogo();
+               
+              
+               
             }
 
             if (dec == 3) {
                 obj2.useraccount();
-                cout << "Press enter to return to the main menu";
-                cin.get();
-                system("cls");
-                writeLogo();
+               
+               
             }
 
             if (dec == 4) {
                 obj2.sentmoney();
-                cout << "Press enter to return to the main menu";
-                cin.get();
-                system("cls");
-                writeLogo();
+                
+               
             }
-            
+            break;
         case 3:
             
              cout << "Enter Admin Password:";
              cin >> admin_pass;
              if (enteredpass == admin_pass) {
                  obj.readUsersFromDatabase("accounts.db");
-                 cout << "Press enter to return to the main menu";
-                 cin.get();
-                 system("cls");
-                 writeLogo();
+                 
+
              }
 
              else {
@@ -77,11 +71,12 @@ public:
                  return 0;
              }
           
+             break;
         default:
             break;
         }
     
-        return 0;
+       
     }
 
 };
@@ -105,7 +100,10 @@ void runMenu() {
 }
 
 int main() {
-    runMenu();
+    
+    while (true) {
+        runMenu();
+    }
 
    
 }
