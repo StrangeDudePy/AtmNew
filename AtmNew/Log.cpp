@@ -71,7 +71,7 @@ string signupmenu::getName() {
     bool nameValid = false;
 
     while (!nameValid) {
-        cout << "Enter Your Full Name: ";
+        cout << "Enter Your Full Name(Only English Characters): ";
         getline(cin, name);
 
         if (name.empty()) {
@@ -281,13 +281,9 @@ int signupmenu::blockcheck(int idgiven){
 
     if (rc_block == SQLITE_OK) {
         if (sqlite3_step(stmt_blocksel) == SQLITE_ROW) {
-            cout << "You Have Been Blocked From Banking Services.Contact With Us For Further Information" << endl;
+            
             sqlite3_finalize(stmt_blocksel);
             sqlite3_close(db);
-            cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Giriþi temizler
-            cout << "Press enter to return to the main menu";
-            cin.get(); // Bir tuþa basýlmasýný bekler
-            system("cls");
             return 1;
 
         }
