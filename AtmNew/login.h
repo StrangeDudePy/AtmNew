@@ -27,6 +27,8 @@ public:
     void readUsersFromDatabase(const string& databasePath);
 
     string convertToLowerCase(string name);
+
+    int blockcheck(int idgiven);
 };
 
 

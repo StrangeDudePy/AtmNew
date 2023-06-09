@@ -15,6 +15,16 @@ public:
         
     
     int sentmoney();
+
+
+    void adminactions();
+
+
+    int blockuser();
+    
+    int unblockuser();
+
+    int deleteuser();
 };
 
 #endif

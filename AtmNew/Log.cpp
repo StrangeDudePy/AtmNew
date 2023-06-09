@@ -11,6 +11,7 @@
 
 
 
+
 using namespace std;
 
 int ID, Pass, noftry;
@@ -184,6 +185,7 @@ int signupmenu::newuser() {
 
     string selectQuery = "SELECT ID FROM Users WHERE ID = " + to_string(idn) + ";";
     sqlite3_stmt* stmt_select;
+   
 
     rc = sqlite3_prepare_v2(db, selectQuery.c_str(), -1, &stmt_select, 0);
     if (rc == SQLITE_OK) {
@@ -191,7 +193,7 @@ int signupmenu::newuser() {
             cout << "ID already exists." << endl;
             sqlite3_finalize(stmt_select);
             sqlite3_close(db);
-            cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Giriþi temizler
+            cin.ignore(numeric_limits<streamsize>::max(),'\n'); // Giriþi temizler
             cout << "Press enter to return to the main menu";
             cin.get(); // Bir tuþa basýlmasýný bekler
             system("cls");
@@ -199,7 +201,8 @@ int signupmenu::newuser() {
             
         }
     }
-  
+
+
 
     sqlite3_finalize(stmt_select);
 
@@ -266,4 +269,27 @@ void signupmenu::readUsersFromDatabase(const string& databasePath) {
 }
 
 
+int signupmenu::blockcheck(int idgiven){
+    sqlite3* db;
+    int rc_blockc = sqlite3_open("accounts.db", &db);
 
+
+    sqlite3_stmt* stmt_blocksel;
+    string BlockSelectQuery = "SELECT * FROM BLOCKED_USERS WHERE BLOCKED_ID =" + to_string(idgiven) + ";";
+    int rc_block = (sqlite3_prepare_v2(db, BlockSelectQuery.c_str(), -1, &stmt_blocksel, 0));
+
+
+    if (rc_block == SQLITE_OK) {
+        if (sqlite3_step(stmt_blocksel) == SQLITE_ROW) {
+            cout << "You Have Been Blocked From Banking Services.Contact With Us For Further Information" << endl;
+            sqlite3_finalize(stmt_blocksel);
+            sqlite3_close(db);
+            cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Giriþi temizler
+            cout << "Press enter to return to the main menu";
+            cin.get(); // Bir tuþa basýlmasýný bekler
+            system("cls");
+            return 1;
+
+        }
+    }
+}

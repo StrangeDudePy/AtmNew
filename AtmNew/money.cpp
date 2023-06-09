@@ -4,9 +4,11 @@
 #include <string>
 #include "login.h"
 #include "Logo.h"
+#include <limits>
 using namespace std;
 int passing_id;
 signupmenu tra;
+moneytra objec;
 
 
 int moneytra::withdraw() {
@@ -21,6 +23,7 @@ int moneytra::withdraw() {
     cin >> idp;
     cout << "Enter Your Password:";
     cin >> tpass;
+    tra.blockcheck(idp);
 
     if (rc != SQLITE_OK) { //delete this later
         cerr << "Cannot open database: " << sqlite3_errmsg(db) << endl;
@@ -106,6 +109,7 @@ int moneytra::depposit() {
     cin >> idp_dep;
     cout << "Enter Your Password: ";
     cin >> tpas_dep;
+    tra.blockcheck(idp_dep);
 
     if (rc_dep != SQLITE_OK) {
         cerr << "Cannot open database: " << sqlite3_errmsg(db) << endl;
@@ -196,10 +200,10 @@ int moneytra::useraccount() {
     cin >> tid_user;
     cout << "Enter Your Password;";
     cin >> tpass_user;
+    tra.blockcheck(tid_user);
 
 
-
-    if (rc_user != SQLITE_OK) { //delete this later
+    if (rc_user != SQLITE_OK) { 
         cerr << "Cannot open database: " << sqlite3_errmsg(db) << endl;
         return 0;
     }
@@ -246,7 +250,7 @@ int moneytra::useraccount() {
 
                 cout << "ID          INCOME          OUTCOME          BALANCE" << endl;
                 cout << tid_user << "          " << income << "          " << outcome << "          " << balance_user << endl;
-                cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Giriþi temizler
+                cin.ignore(numeric_limits<streamsize>::max(), '\n'); 
                 cout << "Press enter to return to the main menu";
                 cin.get(); // Bir tuþa basýlmasýný bekler
                 system("cls");
@@ -255,7 +259,7 @@ int moneytra::useraccount() {
             
             else {
                 cout << "Invalid ID or Password." << endl;
-                cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Giriþi temizler
+                cin.ignore(numeric_limits<streamsize>::max(), '\n'); 
                 cout << "Press enter to return to the main menu";
                 cin.get(); // Bir tuþa basýlmasýný bekler
                 system("cls");
@@ -283,7 +287,9 @@ int moneytra::sentmoney() {
     cin >> sent_id;
     cout << "Enter Your Password: ";
     cin >> sent_pass;
-    if (rc_transfer != SQLITE_OK) { //delete this later
+    
+    tra.blockcheck(sent_id);
+    if (rc_transfer != SQLITE_OK) {
         cerr << "Cannot open database: " << sqlite3_errmsg(db) << endl;
         return 0;
     }
@@ -308,7 +314,7 @@ int moneytra::sentmoney() {
                         cin >> recid;
                         if (balance_sent - transfer_sent < 0) {
                             cout << "Insufficient Balance, Transaction Failed" << endl;
-                            cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Giriþi temizler
+                            cin.ignore(numeric_limits<streamsize>::max(), '\n'); 
                             cout << "Press enter to return to the main menu";
                             cin.get(); // Bir tuþa basýlmasýný bekler
                             system("cls");
@@ -331,7 +337,7 @@ int moneytra::sentmoney() {
                                         if (rc_balance == SQLITE_OK) {
                                             cout << "Transaciton Succesful,Money Sent!" <<endl;
                                             cout << "Current Balance: " << balance_sent_final << endl;
-                                            cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Giriþi temizler
+                                            cin.ignore(numeric_limits<streamsize>::max(), '\n'); 
                                             cout << "Press enter to return to the main menu";
                                             cin.get(); // Bir tuþa basýlmasýný bekler
                                             system("cls");
@@ -342,7 +348,7 @@ int moneytra::sentmoney() {
                                 }
                                 else {
                                     cout << "Recipient ID does not exist." << endl;
-                                    cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Giriþi temizler
+                                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
                                     cout << "Press enter to return to the main menu";
                                     cin.get(); // Bir tuþa basýlmasýný bekler
                                     system("cls");
@@ -358,7 +364,7 @@ int moneytra::sentmoney() {
                 cout << "Invalid ID or Password." << endl;
                 cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Giriþi temizler
                 cout << "Press enter to return to the main menu";
-                cin.get(); // Bir tuþa basýlmasýný bekler
+                cin.get(); 
                 system("cls");
                 return 1;
             }
@@ -371,3 +377,170 @@ int moneytra::sentmoney() {
  
 }
 
+
+int moneytra::blockuser() {
+
+    sqlite3* db;
+    int rc_admin = sqlite3_open("accounts.db", &db);
+    int id_B = 0;
+   
+      
+
+
+
+    if (rc_admin != SQLITE_OK) {
+        cerr << "Cannot open database: " << sqlite3_errmsg(db) << endl;
+        return 0;
+    }
+
+    char* errMsg;
+    string blockQuery = "CREATE TABLE IF NOT EXISTS BLOCKED_USERS (BLOCKED_ID PRIMARY KEY);";
+    rc_admin = sqlite3_exec(db, blockQuery.c_str(), 0, 0, &errMsg);
+
+
+    if (rc_admin != SQLITE_OK) {
+        cerr << "System Error " << errMsg << endl;
+        sqlite3_free(errMsg);
+        sqlite3_close(db);
+        return 0;
+    }
+
+    cout << "Enter ID Of User You Want The Block From Banking Services:";
+    cin >> id_B;
+    string addblockedQuery("INSERT INTO BLOCKED_USERS (BLOCKED_ID) VALUES (" + to_string(id_B) + ");");
+    rc_admin = sqlite3_exec(db, addblockedQuery.c_str(), 0, 0, 0);
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    cout << "Press enter to return to the main menu";
+    cin.get(); // Bir tuþa basýlmasýný bekler
+    system("cls");
+    return 1;
+
+
+   }
+
+
+int moneytra::unblockuser() {
+    sqlite3* db;
+    int rc_UBadmin = sqlite3_open("accounts.db", &db);
+    int id_UB = 0;
+   
+
+    if (rc_UBadmin != SQLITE_OK) {
+        cerr << "Cannot open database: " << sqlite3_errmsg(db) << endl;
+        return 0;
+    }
+    cout << "Enter An ID";
+    cin >> id_UB;
+
+    
+
+
+
+    sqlite3_stmt* bidfind_stmt;
+    string UBFindQuerry="SELECT BLOCKED_ID FROM BLOCKED_USERS WHERE BLOCKED_ID =" + to_string(id_UB) + ";";
+    int rc_unb = sqlite3_prepare_v2(db, UBFindQuerry.c_str(), -1, &bidfind_stmt, 0);
+    if(rc_unb==SQLITE_OK)
+    {
+        if (sqlite3_step(bidfind_stmt) == SQLITE_ROW) {
+            string DeleteQuerry = "UPDATE BLOCKED_USERS SET BLOCKED_ID=NULL WHERE BLOCKED_ID=" + to_string(id_UB) + ";";
+            sqlite3_exec(db, DeleteQuerry.c_str(), 0, 0, 0);
+            cout << "User Succesfuly Unblocked!" << endl;
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            cout << "Press enter to return to the main menu";
+            cin.get(); // Bir tuþa basýlmasýný bekler
+            system("cls");
+            return 1;
+
+        }
+        else {
+            cout << "User Doesn't Exists Or User Not Blocked" << endl;
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            cout << "Press enter to return to the main menu";
+            cin.get(); // Bir tuþa basýlmasýný bekler
+            system("cls");
+            return 1;
+
+        }
+        
+        }
+    
+    
+    
+    
+    }
+
+
+int moneytra::deleteuser(){
+    sqlite3* db;
+    int rc_deladmin = sqlite3_open("accounts.db", &db);
+    int id_del = 0;
+    int id_delcheck = 1;
+
+    if (rc_deladmin != SQLITE_OK) {
+        cerr << "Cannot open database: " << sqlite3_errmsg(db) << endl;
+        return 0;
+    }
+
+    cout << "Enter the ID value of the User you want to delete from the system." << endl;
+    cin >> id_del;
+    cout << "Enter ID Againt To Confirm";
+    cin >> id_delcheck;
+    if (id_del == id_delcheck) {
+           string DeleteUserQuery = "DELETE FROM Users WHERE ID=" + to_string(id_del) + ";";
+           sqlite3_exec(db, DeleteUserQuery.c_str(), 0, 0, 0);
+           cout << "User Deleted Succesfuly";
+           cin.ignore(numeric_limits<streamsize>::max(), '\n');
+           cout << "Press enter to return to the main menu";
+           cin.get(); // Bir tuþa basýlmasýný bekler
+           system("cls");
+           return 1;
+    }
+
+
+    else {
+        cout << "IDs Dont Match"<<endl;
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        cout << "Press enter to return to the main menu";
+        cin.get(); // Bir tuþa basýlmasýný bekler
+        system("cls");
+        return 1;
+    }
+        
+    }
+
+
+
+    
+
+void moneytra::adminactions() {
+    int selected;
+
+
+
+    cout << "--- ADMIN PANEL ---"<<endl;
+    cout << "1-Block User"<<endl;
+    cout << "2-Unblock User"<<endl;
+    cout << "3-Delete User" << endl;
+    cout << "Choose An Action:" << endl;
+    cin >> selected;
+    switch (selected)
+    {
+
+    case 1:
+        objec.blockuser();
+        break;
+
+    
+    case 2:
+        objec.unblockuser();
+        break;
+
+    case 3:
+        objec.deleteuser();
+        break;
+
+    default:
+        break;
+    }
+
+}

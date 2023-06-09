@@ -1,5 +1,4 @@
 #include <iostream>
-#include <Windows.h>
 #include "Logo.h"
 #include "login.h"
 #include "sqlite-amalgamation-3420000/sqlite3.h"
@@ -7,6 +6,7 @@
 moneytra obj2;
 
 signupmenu obj;
+using namespace std;
 
 class MenuChoices {
 public:
@@ -59,20 +59,31 @@ public:
         case 3:
             
              cout << "Enter Admin Password:";
-             cin >> admin_pass;
+             cin >> enteredpass;
              if (enteredpass == admin_pass) {
-                 obj.readUsersFromDatabase("accounts.db");
+                 obj2.adminactions();
                  
 
              }
 
              else {
-                 cout << "Access Denied";
-                 return 0;
+                 cout << "Access Denied"<<endl;
+                 cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                 cout << "Press enter to return to the main menu";
+                 cin.get();
+                 system("cls");
+                 return 1;
+                 
              }
           
              break;
         default:
+            cout << "Invalid Input"<<endl;
+            cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Giriþi temizler
+            cout << "Press enter to return to the main menu";
+            cin.get(); 
+            system("cls");
+            return 1;
             break;
         }
     
